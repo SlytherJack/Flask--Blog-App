@@ -1,3 +1,4 @@
+# From package app importing variable 'app' from __init__.py
 from app import app
 
 
