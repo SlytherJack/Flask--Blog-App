@@ -1,4 +1,13 @@
-from flask import (
+from app import app, db, bcrypt, mail
+from app.models import User, Post
+from app.users.utils import save_picture, send_reset_email
+from app.users.forms import (
+    RegistrationForm,
+    LoginForm,
+    RequestResetForm,
+    ResetPasswordForm,
+    UpdateAccountForm
+)from flask import (
     Blueprint,
     render_template,
     url_for,
@@ -7,17 +16,7 @@ from flask import (
     redirect,
     abort
 )
-from app import app, db, bcrypt, mail
-from app.models import User, Post
 from flask_login import login_user, logout_user, current_user, login_required
-from app.users.forms import (
-    RegistrationForm,
-    LoginForm,
-    RequestResetForm,
-    ResetPasswordForm,
-    UpdateAccountForm
-)
-from app.users.utils import save_picture, send_reset_email
 
 users = Blueprint('users', __name__)
 
@@ -139,7 +138,7 @@ def reset_token(token):
 
 
 @users.route('/user/<string:username>')
-def user_posts():
+def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
